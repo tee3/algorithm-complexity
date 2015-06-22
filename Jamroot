@@ -3,6 +3,9 @@ import testing ;
 project
   : requirements
      <cxxflags>-std=c++14
+
+     <threading>single:<linkflags>-lboost_test_exec_monitor
+     <threading>multi:<linkflags>-lboost_test_exec_monitor
   ;
 
 lib complexity_measurement

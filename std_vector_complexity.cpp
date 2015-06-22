@@ -1,3 +1,6 @@
+#define BOOST_TEST_MODULE std_vector_complexity
+#include <boost/test/unit_test.hpp>
+
 #include <iostream>
 
 #include <algorithm>
@@ -6,12 +9,9 @@
 
 #include <utility>
 
-#include <cassert>
-
 #include "counted_int.hpp"
 
-int
-main ()
+BOOST_AUTO_TEST_CASE (std_vector_complexity_all)
 {
    std::cout << "initial state ------------------------\n";
 
@@ -105,7 +105,7 @@ main ()
       counted_int::reset ();
 
       auto v_i = std::find (std::begin (v),std::end (v),counted_int (v_size + 1));
-      assert (v_i == v.end ());
+      BOOST_CHECK (v_i == v.end ());
 
       std::cout << "v.size: " << v.size () << "\n";
       counted_int::print_counted_operations ();
@@ -115,7 +115,7 @@ main ()
       counted_int::reset ();
 
       v_i = std::find (std::begin (v),std::end (v),counted_int (v_size / 2));
-      assert (v_i != v.end ());
+      BOOST_CHECK (v_i != v.end ());
 
       std::cout << "v.size: " << v.size () << "\n";
       counted_int::print_counted_operations ();
@@ -125,7 +125,7 @@ main ()
       counted_int::reset ();
 
       v_i = std::lower_bound (std::begin (v),std::end (v),counted_int (v_size + 1));
-      assert (v_i == v.end ());
+      BOOST_CHECK (v_i == v.end ());
 
       std::cout << "v.size: " << v.size () << "\n";
       counted_int::print_counted_operations ();
@@ -135,13 +135,11 @@ main ()
       counted_int::reset ();
 
       v_i = std::lower_bound (std::begin (v),std::end (v),counted_int (v_size / 2));
-      assert (v_i != v.end ());
+      BOOST_CHECK (v_i != v.end ());
 
       std::cout << "v.size: " << v.size () << "\n";
       counted_int::print_counted_operations ();
    }
-
-   return 0;
 }
 
 // Local variables:

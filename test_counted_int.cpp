@@ -1,13 +1,13 @@
+#define BOOST_TEST_MODULE counted_int
+#include <boost/test/unit_test.hpp>
+
 #include <iostream>
 
 #include <utility>
 
-#include <cassert>
-
 #include "counted_int.hpp"
 
-int
-main ()
+BOOST_AUTO_TEST_CASE (counted_int_minimal)
 {
    // mininal tests
    {
@@ -36,17 +36,17 @@ main ()
          counted_int c3 = c2;
 
          bool b0 = c0 == c1;
-         assert (!b0);
+         BOOST_CHECK_EQUAL (b0,false);
          bool b1 = c0 != c1;
-         assert (b1);
+         BOOST_CHECK_EQUAL (b1,true);
          bool b2 = c0 < c1;
-         assert (b2);
+         BOOST_CHECK_EQUAL (b2,true);
          bool b3 = c0 > c1;
-         assert (!b3);
+         BOOST_CHECK_EQUAL (b3,false);
          bool b4 = c0 <= c1;
-         assert (b4);
+         BOOST_CHECK_EQUAL (b4,true);
          bool b5 = c0 >= c1;
-         assert (!b5);
+         BOOST_CHECK_EQUAL (b5,false);
 
          using std::swap;
          swap (c2,c3);
@@ -60,8 +60,6 @@ main ()
 
       counted_int::print_counted_operations ();
    }
-
-   return 0;
 }
 
 // Local variables:
