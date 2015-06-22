@@ -12,3 +12,4 @@ lib complexity_measurement
   ;
 
 run test_counted_int.cpp complexity_measurement ;
+run std_vector_complexity.cpp complexity_measurement ;
