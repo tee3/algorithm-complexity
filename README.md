@@ -9,5 +9,5 @@ integer (representing any value type).
 # How to run
 
 ```
-make
+b2 --verbose-test
 ```
