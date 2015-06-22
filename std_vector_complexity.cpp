@@ -5,11 +5,37 @@
 
 #include <algorithm>
 #include <iterator>
+#include <random>
 #include <vector>
 
 #include <utility>
 
+#include <cmath>
+
+#include <cassert>
+
 #include "counted_int.hpp"
+
+/// @brief If defined, the contents of the data structure and the
+/// results for each iteration will be printed.
+///
+/// This can be enabled for small N.
+#undef MEASURE_COMPLEXITY_DEBUG_PRINT
+
+#if defined (MEASURE_COMPLEXITY_DEBUG_PRINT)
+/// @brief Extremely basic printer for a vector of counted integers.
+std::ostream &
+operator<< (std::ostream & os, const std::vector<counted_int> & v)
+{
+   std::cout << v.size () << "\n";
+   for (const auto & vi : v)
+   {
+      std::cout << vi << " ";
+   }
+
+   return os;
+}
+#endif
 
 BOOST_AUTO_TEST_CASE (std_vector_complexity_all)
 {
@@ -139,6 +165,64 @@ BOOST_AUTO_TEST_CASE (std_vector_complexity_all)
 
       std::cout << "v.size: " << v.size () << "\n";
       counted_int::print_counted_operations ();
+   }
+
+   // actual complexity measurement
+   {
+      using n_container_type = std::vector<std::vector<counted_int>::size_type>;
+
+      n_container_type ns;
+      for (n_container_type::size_type i = 0; i < 10; ++i)
+      {
+         ns.emplace_back (n_container_type::value_type (1) << i);
+      }
+
+      auto urng = std::mt19937 { std::random_device {} () };
+
+      std::vector<counted_int> v;
+
+      for (const auto & n : ns)
+      {
+         v.reserve (n);
+         for (auto i = v.size (); i < n; ++i)
+         {
+            v.push_back (std::vector<counted_int>::value_type (i));
+         }
+
+         assert (v.size () == n);
+
+         const unsigned long long int n_log2_n =
+            std::ceil (v.size () *
+                       std::log2 (static_cast<long double> (v.size ())));
+
+         std::shuffle (std::begin (v),std::end (v),urng);
+
+#if defined (MEASURE_COMPLEXITY_DEBUG_PRINT)
+         std::cout << v << "\n";
+#endif
+
+         counted_int::reset ();
+
+         std::cout << "sorting a vector ---------------------\n";
+
+         std::sort (std::begin (v),std::end (v));
+
+#if defined (MEASURE_COMPLEXITY_DEBUG_PRINT)
+         std::cout << v << "\n";
+#endif
+
+         std::cout << "(v.size, (n * log_2 (n)): (" << v.size () << ", " << n_log2_n << ")\n";
+         counted_int::print_counted_operations ();
+
+         // @note this may fail for any individual run, but succeeds on average
+         BOOST_CHECK_EQUAL (counted_int::constructions,0);
+         BOOST_CHECK_EQUAL (counted_int::assignments,0);
+         BOOST_CHECK_EQUAL (counted_int::copies,0);
+         BOOST_CHECK_EQUAL (counted_int::destructions,0);
+         BOOST_CHECK_EQUAL (counted_int::accesses,0);
+         BOOST_CHECK_LE (counted_int::comparisons,n_log2_n);
+         BOOST_CHECK_LE (counted_int::swaps,n_log2_n);
+      }
    }
 }
 
