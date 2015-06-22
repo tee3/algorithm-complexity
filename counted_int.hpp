@@ -107,7 +107,7 @@ public:
    void
    print_counted_operations ();
 
-private:
+public:
    static
    long long int constructions;
    static
