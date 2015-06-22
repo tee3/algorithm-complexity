@@ -5,4 +5,10 @@ project
      <cxxflags>-std=c++14
   ;
 
-run test_counted_int.cpp counted_int.cpp ;
+lib complexity_measurement
+  : # sources
+     counted_int.cpp
+     counted_int.hpp
+  ;
+
+run test_counted_int.cpp complexity_measurement ;
