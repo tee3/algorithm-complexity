@@ -18,19 +18,6 @@
 #include "counted_operations.hpp"
 #include "counted_operations_io.hpp"
 
-/// @brief If defined, the contents of the data structure and the
-/// results for each iteration will be printed.
-///
-/// This can be enabled for small N.
-#undef MEASURE_COMPLEXITY_DEBUG_PRINT
-
-/// @brief If defined, the counts for each iterations will be checked
-/// against the criteria.
-///
-/// This can be enabled for small N.
-#undef MEASURE_COMPLEXITY_CHECK_ITERATION
-
-#if defined (MEASURE_COMPLEXITY_DEBUG_PRINT)
 /// @brief Extremely basic printer for a vector of counted integers.
 std::ostream &
 operator<< (std::ostream & os, const std::vector<counted_int> & v)
@@ -43,7 +30,6 @@ operator<< (std::ostream & os, const std::vector<counted_int> & v)
 
    return os;
 }
-#endif
 
 BOOST_AUTO_TEST_CASE (std_vector_complexity_all)
 {
@@ -82,37 +68,11 @@ BOOST_AUTO_TEST_CASE (std_vector_complexity_all)
          {
             std::shuffle (std::begin (v),std::end (v),urng);
 
-#if defined (MEASURE_COMPLEXITY_DEBUG_PRINT)
-            std::cout << v << "\n";
-#endif
-
             counted_int::reset ();
 
             std::sort (std::begin (v),std::end (v));
 
-#if defined (MEASURE_COMPLEXITY_DEBUG_PRINT)
-            std::cout << v << "\n";
-#endif
-
-#if defined (MEASURE_COMPLEXITY_DEBUG_PRINT)
-            std::cout << "(v.size, (n * log_2 (n)): (" << v.size () << ", " << n_log2_n << ")\n";
-            std::cout << counted_int::counts () << "\n";
-#endif
-
-            counted_operations snapshot = counted_int::counts ();
-
-            counts += snapshot;
-
-#if defined (MEASURE_COMPLEXITY_CHECK_ITERATION)
-            // @todo this may fail for any individual run, but succeeds on average
-            BOOST_CHECK_EQUAL (snapshot.constructions,0);
-            BOOST_CHECK_EQUAL (snapshot.assignments,0);
-            BOOST_CHECK_EQUAL (snapshot.copies,0);
-            BOOST_CHECK_EQUAL (snapshot.destructions,0);
-            BOOST_CHECK_EQUAL (snapshot.accesses,0);
-            BOOST_CHECK_LE (snapshot.comparisons,n_log2_n);
-            BOOST_CHECK_LE (snapshot.swaps,n_log2_n);
-#endif
+            counts += counted_int::counts ();
          }
 
          // calculate averages
