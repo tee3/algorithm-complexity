@@ -19,4 +19,5 @@ lib complexity_measurement
 
 run test_counted_int.cpp complexity_measurement ;
 run test_counted_operations.cpp complexity_measurement ;
-run std_vector_complexity.cpp complexity_measurement ;
+run examples.cpp complexity_measurement ;
+run algorithm_complexity.cpp complexity_measurement ;
