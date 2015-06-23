@@ -6,13 +6,15 @@ std::ostream &
 operator<< (std::ostream & os, const counted_operations & rhs)
 {
    os <<
-      "constructions: " << rhs.constructions << "\n" <<
-      "assignments: " << rhs.assignments << "\n" <<
-      "copies: " << rhs.copies << "\n" <<
-      "accesses: " << rhs.copies << "\n" <<
-      "destructions: " << rhs.destructions << "\n" <<
-      "comparisons: " << rhs.comparisons << "\n" <<
-      "swaps: " << rhs.swaps;
+      "(" << "\n" <<
+      "   constructions: " << rhs.constructions << "\n" <<
+      "   assignments: " << rhs.assignments << "\n" <<
+      "   copies: " << rhs.copies << "\n" <<
+      "   accesses: " << rhs.copies << "\n" <<
+      "   destructions: " << rhs.destructions << "\n" <<
+      "   comparisons: " << rhs.comparisons << "\n" <<
+      "   swaps: " << rhs.swaps << "\n"
+      ")";
 
    return os;
 }
