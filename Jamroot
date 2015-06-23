@@ -12,7 +12,11 @@ lib complexity_measurement
   : # sources
      counted_int.cpp
      counted_int.hpp
+     counted_operations.hpp
+     counted_operations_io.cpp
+     counted_operations_io.hpp
   ;
 
 run test_counted_int.cpp complexity_measurement ;
+run test_counted_operations.cpp complexity_measurement ;
 run std_vector_complexity.cpp complexity_measurement ;

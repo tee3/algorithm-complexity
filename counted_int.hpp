@@ -3,18 +3,20 @@
 
 #include <utility>
 
+#include "counted_operations.hpp"
+
 class counted_int
 {
 public:
    counted_int (const int v) :
       v_ (v)
    {
-      ++constructions;
+      ++counts_.constructions;
    }
 
    counted_int (const counted_int & rhs)
    {
-      ++copies;
+      ++counts_.copies;
 
       v_ = rhs.v_;
    }
@@ -22,7 +24,7 @@ public:
    counted_int &
    operator= (const counted_int & rhs)
    {
-      ++assignments;
+      ++counts_.assignments;
 
       v_ = rhs.v_;
 
@@ -31,20 +33,20 @@ public:
 
    operator int () const
    {
-      ++accesses;
+      ++counts_.accesses;
 
       return v_;
    }
 
    ~counted_int ()
    {
-      ++destructions;
+      ++counts_.destructions;
    }
 
    bool
    operator== (const counted_int & rhs) const
    {
-      ++comparisons;
+      ++counts_.comparisons;
 
       return v_ == rhs.v_;
    }
@@ -52,7 +54,7 @@ public:
    bool
    operator< (const counted_int & rhs) const
    {
-      ++comparisons;
+      ++counts_.comparisons;
 
       return v_ < rhs.v_;
    }
@@ -85,45 +87,29 @@ public:
    void
    swap (counted_int & lhs, counted_int & rhs)
    {
-      ++swaps;
+      ++counts_.swaps;
 
       std::swap (lhs.v_,rhs.v_);
+   }
+
+   static
+   const counted_operations &
+   counts ()
+   {
+      return counts_;
    }
 
    static
    void
    reset ()
    {
-      constructions = 0;
-      assignments = 0;
-      copies = 0;
-      destructions = 0;
-      accesses = 0;
-      comparisons = 0;
-      swaps = 0;
+      counts_.reset ();
    }
 
-   static
-   void
-   print_counted_operations ();
-
-public:
-   static
-   long long int constructions;
-   static
-   long long int assignments;
-   static
-   long long int copies;
-   static
-   long long int destructions;
-   static
-   long long int accesses;
-   static
-   long long int comparisons;
-   static
-   long long int swaps;
-
 private:
+   static
+   counted_operations counts_;
+
    int v_;
 };
 

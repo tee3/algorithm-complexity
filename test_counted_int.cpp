@@ -6,24 +6,16 @@
 #include <utility>
 
 #include "counted_int.hpp"
+#include "counted_operations.hpp"
+#include "counted_operations_io.hpp"
 
 BOOST_AUTO_TEST_CASE (counted_int_minimal)
 {
    // mininal tests
    {
-      std::cout << "verifying that counts are public ------------\n";
-
-      std::cout << "constructions: " << counted_int::constructions << "\n";
-      std::cout << "assignments: " << counted_int::assignments << "\n";
-      std::cout << "copies: " << counted_int::copies << "\n";
-      std::cout << "destructions: " << counted_int::destructions << "\n";
-      std::cout << "accesses: " << counted_int::accesses << "\n";
-      std::cout << "comparisons: " << counted_int::comparisons << "\n";
-      std::cout << "swaps: " << counted_int::swaps << "\n";
-
       std::cout << "initial state ------------------------\n";
 
-      counted_int::print_counted_operations ();
+      std::cout << counted_int::counts () << "\n";
 
       std::cout << "minimal test ------------------------\n";
 
@@ -52,13 +44,13 @@ BOOST_AUTO_TEST_CASE (counted_int_minimal)
          swap (c2,c3);
       }
 
-      counted_int::print_counted_operations ();
+      std::cout << counted_int::counts () << "\n";
 
       std::cout << "reset ------------------------\n";
 
       counted_int::reset ();
 
-      counted_int::print_counted_operations ();
+      std::cout << counted_int::counts () << "\n";
    }
 }
 

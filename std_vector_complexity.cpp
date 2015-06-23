@@ -15,6 +15,8 @@
 #include <cassert>
 
 #include "counted_int.hpp"
+#include "counted_operations.hpp"
+#include "counted_operations_io.hpp"
 
 /// @brief If defined, the contents of the data structure and the
 /// results for each iteration will be printed.
@@ -47,7 +49,7 @@ BOOST_AUTO_TEST_CASE (std_vector_complexity_all)
 {
    std::cout << "initial state ------------------------\n";
 
-   counted_int::print_counted_operations ();
+   std::cout << counted_int::counts () << "\n";
 
    {
       std::cout << "creating a vector via std::initializer_list of int ------------------------\n";
@@ -57,7 +59,7 @@ BOOST_AUTO_TEST_CASE (std_vector_complexity_all)
       std::vector<counted_int> v { 0, 1, 2, 3, 4, 5, 6, 7 };
 
       std::cout << "v.size: " << v.size () << "\n";
-      counted_int::print_counted_operations ();
+      std::cout << counted_int::counts () << "\n";
    }
 
    {
@@ -72,7 +74,7 @@ BOOST_AUTO_TEST_CASE (std_vector_complexity_all)
       }
 
       std::cout << "v.size: " << v.size () << "\n";
-      counted_int::print_counted_operations ();
+      std::cout << counted_int::counts () << "\n";
    }
 
    {
@@ -87,7 +89,7 @@ BOOST_AUTO_TEST_CASE (std_vector_complexity_all)
       }
 
       std::cout << "v.size: " << v.size () << "\n";
-      counted_int::print_counted_operations ();
+      std::cout << counted_int::counts () << "\n";
    }
 
    {
@@ -106,7 +108,7 @@ BOOST_AUTO_TEST_CASE (std_vector_complexity_all)
       std::sort (std::begin (v),std::end (v));
 
       std::cout << "v.size: " << v.size () << "\n";
-      counted_int::print_counted_operations ();
+      std::cout << counted_int::counts () << "\n";
    }
 
    {
@@ -130,7 +132,7 @@ BOOST_AUTO_TEST_CASE (std_vector_complexity_all)
       std::sort (std::begin (v),std::end (v));
 
       std::cout << "v.size: " << v.size () << "\n";
-      counted_int::print_counted_operations ();
+      std::cout << counted_int::counts () << "\n";
 
       std::cout << "failing find on a vector ------------------------\n";
 
@@ -140,7 +142,7 @@ BOOST_AUTO_TEST_CASE (std_vector_complexity_all)
       BOOST_CHECK (v_i == v.end ());
 
       std::cout << "v.size: " << v.size () << "\n";
-      counted_int::print_counted_operations ();
+      std::cout << counted_int::counts () << "\n";
 
       std::cout << "succeeding find on a vector ---------------------\n";
 
@@ -150,7 +152,7 @@ BOOST_AUTO_TEST_CASE (std_vector_complexity_all)
       BOOST_CHECK (v_i != v.end ());
 
       std::cout << "v.size: " << v.size () << "\n";
-      counted_int::print_counted_operations ();
+      std::cout << counted_int::counts () << "\n";
 
       std::cout << "failing search on a sorted vector ---------------------\n";
 
@@ -160,7 +162,7 @@ BOOST_AUTO_TEST_CASE (std_vector_complexity_all)
       BOOST_CHECK (v_i == v.end ());
 
       std::cout << "v.size: " << v.size () << "\n";
-      counted_int::print_counted_operations ();
+      std::cout << counted_int::counts () << "\n";
 
       std::cout << "succeeding search on a sorted vector ---------------------\n";
 
@@ -170,7 +172,7 @@ BOOST_AUTO_TEST_CASE (std_vector_complexity_all)
       BOOST_CHECK (v_i != v.end ());
 
       std::cout << "v.size: " << v.size () << "\n";
-      counted_int::print_counted_operations ();
+      std::cout << counted_int::counts () << "\n";
    }
 
    // actual complexity measurement
@@ -202,13 +204,7 @@ BOOST_AUTO_TEST_CASE (std_vector_complexity_all)
             std::ceil (v.size () *
                        std::log2 (static_cast<long double> (v.size ())));
 
-         long long int constructions = 0;
-         long long int assignments = 0;
-         long long int copies = 0;
-         long long int destructions = 0;
-         long long int accesses = 0;
-         long long int comparisons = 0;
-         long long int swaps = 0;
+         counted_operations counts;
 
          for (int i = 0; i < iterations; ++i)
          {
@@ -228,69 +224,59 @@ BOOST_AUTO_TEST_CASE (std_vector_complexity_all)
 
 #if defined (MEASURE_COMPLEXITY_DEBUG_PRINT)
             std::cout << "(v.size, (n * log_2 (n)): (" << v.size () << ", " << n_log2_n << ")\n";
-            counted_int::print_counted_operations ();
+            std::cout << counted_int::counts () << "\n";
 #endif
 
-            constructions += counted_int::constructions;
-            assignments += counted_int::assignments;
-            copies += counted_int::copies;
-            destructions += counted_int::destructions;
-            accesses += counted_int::accesses;
-            comparisons += counted_int::comparisons;
-            swaps += counted_int::swaps;
+            counted_operations snapshot = counted_int::counts ();
+
+            counts += snapshot;
 
 #if defined (MEASURE_COMPLEXITY_CHECK_ITERATION)
             // @todo this may fail for any individual run, but succeeds on average
-            BOOST_CHECK_EQUAL (counted_int::constructions,0);
-            BOOST_CHECK_EQUAL (counted_int::assignments,0);
-            BOOST_CHECK_EQUAL (counted_int::copies,0);
-            BOOST_CHECK_EQUAL (counted_int::destructions,0);
-            BOOST_CHECK_EQUAL (counted_int::accesses,0);
-            BOOST_CHECK_LE (counted_int::comparisons,n_log2_n);
-            BOOST_CHECK_LE (counted_int::swaps,n_log2_n);
+            BOOST_CHECK_EQUAL (snapshot.constructions,0);
+            BOOST_CHECK_EQUAL (snapshot.assignments,0);
+            BOOST_CHECK_EQUAL (snapshot.copies,0);
+            BOOST_CHECK_EQUAL (snapshot.destructions,0);
+            BOOST_CHECK_EQUAL (snapshot.accesses,0);
+            BOOST_CHECK_LE (snapshot.comparisons,n_log2_n);
+            BOOST_CHECK_LE (snapshot.swaps,n_log2_n);
 #endif
          }
 
          // calculate averages
-         constructions =
-            std::ceil (constructions /
+         counts.constructions =
+            std::ceil (counts.constructions /
                        static_cast<long double> (iterations));
-         assignments =
-            std::ceil (assignments /
+         counts.assignments =
+            std::ceil (counts.assignments /
                        static_cast<long double> (iterations));
-         copies =
-            std::ceil (copies /
+         counts.copies =
+            std::ceil (counts.copies /
                        static_cast<long double> (iterations));
-         destructions =
-            std::ceil (destructions /
+         counts.destructions =
+            std::ceil (counts.destructions /
                        static_cast<long double> (iterations));
-         accesses =
-            std::ceil (accesses /
+         counts.accesses =
+            std::ceil (counts.accesses /
                        static_cast<long double> (iterations));
-         comparisons =
-            std::ceil (comparisons /
+         counts.comparisons =
+            std::ceil (counts.comparisons /
                        static_cast<long double> (iterations));
-         swaps =
-            std::ceil (swaps /
+         counts.swaps =
+            std::ceil (counts.swaps /
                        static_cast<long double> (iterations));
 
          std::cout << "(v.size, iterations, (n * log_2 (n)): (" << v.size () << ", " << iterations << ", " << n_log2_n << ")\n";
-         std::cout << "constructions: " << constructions << "\n";
-         std::cout << "assignments: " << assignments << "\n";
-         std::cout << "copies: " << copies << "\n";
-         std::cout << "accesses: " << copies << "\n";
-         std::cout << "destructions: " << destructions << "\n";
-         std::cout << "comparisons: " << comparisons << "\n";
-         std::cout << "swaps: " << swaps << "\n";
+         std::cout << counts << "\n";
 
          // This should succeed on average.
-         BOOST_CHECK_EQUAL (constructions,0);
-         BOOST_CHECK_EQUAL (assignments,0);
-         BOOST_CHECK_EQUAL (copies,0);
-         BOOST_CHECK_EQUAL (destructions,0);
-         BOOST_CHECK_EQUAL (accesses,0);
-         BOOST_CHECK_LE (comparisons,n_log2_n);
-         BOOST_CHECK_LE (swaps,n_log2_n);
+         BOOST_CHECK_EQUAL (counts.constructions,0);
+         BOOST_CHECK_EQUAL (counts.assignments,0);
+         BOOST_CHECK_EQUAL (counts.copies,0);
+         BOOST_CHECK_EQUAL (counts.destructions,0);
+         BOOST_CHECK_EQUAL (counts.accesses,0);
+         BOOST_CHECK_LE (counts.comparisons,n_log2_n);
+         BOOST_CHECK_LE (counts.swaps,n_log2_n);
       }
    }
 }
