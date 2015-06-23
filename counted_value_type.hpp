@@ -1,27 +1,28 @@
-#ifndef counted_int_hpp
-#define counted_int_hpp
+#ifndef counted_value_type_hpp
+#define counted_value_type_hpp
 
 #include <utility>
 
 #include "counted_operations.hpp"
 
-class counted_int
+template<typename T = int>
+class counted_value_type
 {
 public:
-   counted_int (const int v) :
+   counted_value_type (const T v) :
       v_ (v)
    {
       ++counts_.constructions;
    }
 
-   counted_int (const counted_int & rhs) :
+   counted_value_type (const counted_value_type & rhs) :
       v_ (rhs.v_)
    {
       ++counts_.copies;
    }
 
-   counted_int &
-   operator= (const counted_int & rhs)
+   counted_value_type &
+   operator= (const counted_value_type & rhs)
    {
       ++counts_.assignments;
 
@@ -30,20 +31,20 @@ public:
       return *this;
    }
 
-   operator int () const
+   operator T () const
    {
       ++counts_.accesses;
 
       return v_;
    }
 
-   ~counted_int ()
+   ~counted_value_type ()
    {
       ++counts_.destructions;
    }
 
    bool
-   operator== (const counted_int & rhs) const
+   operator== (const counted_value_type & rhs) const
    {
       ++counts_.comparisons;
 
@@ -51,7 +52,7 @@ public:
    }
 
    bool
-   operator< (const counted_int & rhs) const
+   operator< (const counted_value_type & rhs) const
    {
       ++counts_.comparisons;
 
@@ -59,32 +60,32 @@ public:
    }
 
    bool
-   operator!= (const counted_int & rhs) const
+   operator!= (const counted_value_type & rhs) const
    {
       return !(*this == rhs);
    }
 
    bool
-   operator<= (const counted_int & rhs) const
+   operator<= (const counted_value_type & rhs) const
    {
       return !(rhs < *this);
    }
 
    bool
-   operator> (const counted_int & rhs) const
+   operator> (const counted_value_type & rhs) const
    {
       return rhs < *this;
    }
 
    bool
-   operator>= (const counted_int & rhs) const
+   operator>= (const counted_value_type & rhs) const
    {
       return !(*this < rhs);
    }
 
    friend
    void
-   swap (counted_int & lhs, counted_int & rhs)
+   swap (counted_value_type & lhs, counted_value_type & rhs)
    {
       ++counts_.swaps;
 
@@ -109,7 +110,7 @@ private:
    static
    counted_operations counts_;
 
-   int v_;
+   T v_;
 };
 
 // Local variables:

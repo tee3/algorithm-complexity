@@ -15,13 +15,13 @@
 #include <cassert>
 
 #include "complexity.hpp"
-#include "counted_int.hpp"
+#include "counted_value_type.hpp"
 #include "counted_operations.hpp"
 #include "counted_operations_io.hpp"
 
 /// @brief Extremely basic printer for a vector of counted integers.
 std::ostream &
-operator<< (std::ostream & os, const std::vector<counted_int> & v)
+operator<< (std::ostream & os, const std::vector<counted_value_type<>> & v)
 {
    std::cout << v.size () << "\n";
    for (const auto & vi : v)
@@ -36,7 +36,7 @@ BOOST_AUTO_TEST_CASE (algorithm_complexity_all)
 {
    // actual complexity measurement
    {
-      using n_container_type = std::vector<std::vector<counted_int>::size_type>;
+      using n_container_type = std::vector<std::vector<counted_value_type<>>::size_type>;
 
       n_container_type ns;
       for (n_container_type::size_type i = 0; i < 10; ++i)
@@ -47,14 +47,14 @@ BOOST_AUTO_TEST_CASE (algorithm_complexity_all)
 
       auto urng = std::mt19937 { std::random_device {} () };
 
-      std::vector<counted_int> v;
+      std::vector<counted_value_type<>> v;
 
       for (const auto & n : ns)
       {
          v.reserve (n);
          for (auto i = v.size (); i < n; ++i)
          {
-            v.push_back (std::vector<counted_int>::value_type (i));
+            v.push_back (std::vector<counted_value_type<>>::value_type (i));
          }
 
          assert (v.size () == n);
@@ -73,11 +73,11 @@ BOOST_AUTO_TEST_CASE (algorithm_complexity_all)
          {
             std::shuffle (std::begin (v),std::end (v),urng);
 
-            counted_int::reset ();
+            counted_value_type<>::reset ();
 
             std::sort (std::begin (v),std::end (v));
 
-            counts += counted_int::counts ();
+            counts += counted_value_type<>::counts ();
          }
 
          // calculate averages

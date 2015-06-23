@@ -1,31 +1,31 @@
-#define BOOST_TEST_MODULE counted_int
+#define BOOST_TEST_MODULE counted_value_type
 #include <boost/test/unit_test.hpp>
 
 #include <iostream>
 
 #include <utility>
 
-#include "counted_int.hpp"
+#include "counted_value_type.hpp"
 #include "counted_operations.hpp"
 #include "counted_operations_io.hpp"
 
-BOOST_AUTO_TEST_CASE (counted_int_minimal)
+BOOST_AUTO_TEST_CASE (counted_value_type_minimal)
 {
    // mininal tests
    {
       std::cout << "initial state ------------------------\n";
 
-      std::cout << counted_int::counts () << "\n";
+      std::cout << counted_value_type<>::counts () << "\n";
 
       std::cout << "minimal test ------------------------\n";
 
-      counted_int::reset ();
+      counted_value_type<>::reset ();
 
       {
-         counted_int c0 (0);
-         counted_int c1 = 1;
-         counted_int c2 (c1);
-         counted_int c3 = c2;
+         counted_value_type<> c0 (0);
+         counted_value_type<> c1 = 1;
+         counted_value_type<> c2 (c1);
+         counted_value_type<> c3 = c2;
 
          bool b0 = c0 == c1;
          BOOST_CHECK_EQUAL (b0,false);
@@ -44,13 +44,13 @@ BOOST_AUTO_TEST_CASE (counted_int_minimal)
          swap (c2,c3);
       }
 
-      std::cout << counted_int::counts () << "\n";
+      std::cout << counted_value_type<>::counts () << "\n";
 
       std::cout << "reset ------------------------\n";
 
-      counted_int::reset ();
+      counted_value_type<>::reset ();
 
-      std::cout << counted_int::counts () << "\n";
+      std::cout << counted_value_type<>::counts () << "\n";
    }
 }
 
