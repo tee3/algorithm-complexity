@@ -14,6 +14,7 @@
 
 #include <cassert>
 
+#include "complexity.hpp"
 #include "counted_int.hpp"
 #include "counted_operations.hpp"
 #include "counted_operations_io.hpp"
@@ -31,7 +32,7 @@ operator<< (std::ostream & os, const std::vector<counted_int> & v)
    return os;
 }
 
-BOOST_AUTO_TEST_CASE (std_vector_complexity_all)
+BOOST_AUTO_TEST_CASE (algorithm_complexity_all)
 {
    // actual complexity measurement
    {
@@ -57,10 +58,6 @@ BOOST_AUTO_TEST_CASE (std_vector_complexity_all)
          }
 
          assert (v.size () == n);
-
-         const unsigned long long int n_log2_n =
-            std::ceil (v.size () *
-                       std::log2 (static_cast<long double> (v.size ())));
 
          counted_operations counts;
 
@@ -98,7 +95,7 @@ BOOST_AUTO_TEST_CASE (std_vector_complexity_all)
             std::ceil (counts.swaps /
                        static_cast<long double> (iterations));
 
-         std::cout << "(v.size, iterations, (n * log_2 (n)): (" << v.size () << ", " << iterations << ", " << n_log2_n << ")\n";
+         std::cout << "(v.size, iterations, (n * log_2 (n)): (" << v.size () << ", " << iterations << ", " << O_n_log2_n (v.size ()) << ")\n";
          std::cout << counts << "\n";
 
          // This should succeed on average.
@@ -107,8 +104,8 @@ BOOST_AUTO_TEST_CASE (std_vector_complexity_all)
          BOOST_CHECK_EQUAL (counts.copies,0);
          BOOST_CHECK_EQUAL (counts.destructions,0);
          BOOST_CHECK_EQUAL (counts.accesses,0);
-         BOOST_CHECK_LE (counts.comparisons,n_log2_n);
-         BOOST_CHECK_LE (counts.swaps,n_log2_n);
+         BOOST_CHECK_LE (counts.comparisons,O_n_log2_n (v.size ()));
+         BOOST_CHECK_LE (counts.swaps,O_n_log2_n (v.size ()));
       }
    }
 }

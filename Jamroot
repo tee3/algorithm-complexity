@@ -10,6 +10,7 @@ project
 
 lib complexity_measurement
   : # sources
+     complexity.hpp
      counted_int.cpp
      counted_int.hpp
      counted_operations.hpp
@@ -17,6 +18,7 @@ lib complexity_measurement
      counted_operations_io.hpp
   ;
 
+run test_complexity.cpp complexity_measurement ;
 run test_counted_int.cpp complexity_measurement ;
 run test_counted_operations.cpp complexity_measurement ;
 run examples.cpp complexity_measurement ;
