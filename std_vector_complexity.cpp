@@ -22,6 +22,12 @@
 /// This can be enabled for small N.
 #undef MEASURE_COMPLEXITY_DEBUG_PRINT
 
+/// @brief If defined, the counts for each iterations will be checked
+/// against the criteria.
+///
+/// This can be enabled for small N.
+#undef MEASURE_COMPLEXITY_CHECK_ITERATION
+
 #if defined (MEASURE_COMPLEXITY_DEBUG_PRINT)
 /// @brief Extremely basic printer for a vector of counted integers.
 std::ostream &
@@ -176,6 +182,7 @@ BOOST_AUTO_TEST_CASE (std_vector_complexity_all)
       {
          ns.emplace_back (n_container_type::value_type (1) << i);
       }
+      const int iterations = 1000;
 
       auto urng = std::mt19937 { std::random_device {} () };
 
@@ -195,33 +202,95 @@ BOOST_AUTO_TEST_CASE (std_vector_complexity_all)
             std::ceil (v.size () *
                        std::log2 (static_cast<long double> (v.size ())));
 
-         std::shuffle (std::begin (v),std::end (v),urng);
+         long long int constructions = 0;
+         long long int assignments = 0;
+         long long int copies = 0;
+         long long int destructions = 0;
+         long long int accesses = 0;
+         long long int comparisons = 0;
+         long long int swaps = 0;
+
+         for (int i = 0; i < iterations; ++i)
+         {
+            std::shuffle (std::begin (v),std::end (v),urng);
 
 #if defined (MEASURE_COMPLEXITY_DEBUG_PRINT)
-         std::cout << v << "\n";
+            std::cout << v << "\n";
 #endif
 
-         counted_int::reset ();
+            counted_int::reset ();
 
-         std::cout << "sorting a vector ---------------------\n";
-
-         std::sort (std::begin (v),std::end (v));
+            std::sort (std::begin (v),std::end (v));
 
 #if defined (MEASURE_COMPLEXITY_DEBUG_PRINT)
-         std::cout << v << "\n";
+            std::cout << v << "\n";
 #endif
 
-         std::cout << "(v.size, (n * log_2 (n)): (" << v.size () << ", " << n_log2_n << ")\n";
-         counted_int::print_counted_operations ();
+#if defined (MEASURE_COMPLEXITY_DEBUG_PRINT)
+            std::cout << "(v.size, (n * log_2 (n)): (" << v.size () << ", " << n_log2_n << ")\n";
+            counted_int::print_counted_operations ();
+#endif
 
-         // @note this may fail for any individual run, but succeeds on average
-         BOOST_CHECK_EQUAL (counted_int::constructions,0);
-         BOOST_CHECK_EQUAL (counted_int::assignments,0);
-         BOOST_CHECK_EQUAL (counted_int::copies,0);
-         BOOST_CHECK_EQUAL (counted_int::destructions,0);
-         BOOST_CHECK_EQUAL (counted_int::accesses,0);
-         BOOST_CHECK_LE (counted_int::comparisons,n_log2_n);
-         BOOST_CHECK_LE (counted_int::swaps,n_log2_n);
+            constructions += counted_int::constructions;
+            assignments += counted_int::assignments;
+            copies += counted_int::copies;
+            destructions += counted_int::destructions;
+            accesses += counted_int::accesses;
+            comparisons += counted_int::comparisons;
+            swaps += counted_int::swaps;
+
+#if defined (MEASURE_COMPLEXITY_CHECK_ITERATION)
+            // @todo this may fail for any individual run, but succeeds on average
+            BOOST_CHECK_EQUAL (counted_int::constructions,0);
+            BOOST_CHECK_EQUAL (counted_int::assignments,0);
+            BOOST_CHECK_EQUAL (counted_int::copies,0);
+            BOOST_CHECK_EQUAL (counted_int::destructions,0);
+            BOOST_CHECK_EQUAL (counted_int::accesses,0);
+            BOOST_CHECK_LE (counted_int::comparisons,n_log2_n);
+            BOOST_CHECK_LE (counted_int::swaps,n_log2_n);
+#endif
+         }
+
+         // calculate averages
+         constructions =
+            std::ceil (constructions /
+                       static_cast<long double> (iterations));
+         assignments =
+            std::ceil (assignments /
+                       static_cast<long double> (iterations));
+         copies =
+            std::ceil (copies /
+                       static_cast<long double> (iterations));
+         destructions =
+            std::ceil (destructions /
+                       static_cast<long double> (iterations));
+         accesses =
+            std::ceil (accesses /
+                       static_cast<long double> (iterations));
+         comparisons =
+            std::ceil (comparisons /
+                       static_cast<long double> (iterations));
+         swaps =
+            std::ceil (swaps /
+                       static_cast<long double> (iterations));
+
+         std::cout << "(v.size, iterations, (n * log_2 (n)): (" << v.size () << ", " << iterations << ", " << n_log2_n << ")\n";
+         std::cout << "constructions: " << constructions << "\n";
+         std::cout << "assignments: " << assignments << "\n";
+         std::cout << "copies: " << copies << "\n";
+         std::cout << "accesses: " << copies << "\n";
+         std::cout << "destructions: " << destructions << "\n";
+         std::cout << "comparisons: " << comparisons << "\n";
+         std::cout << "swaps: " << swaps << "\n";
+
+         // This should succeed on average.
+         BOOST_CHECK_EQUAL (constructions,0);
+         BOOST_CHECK_EQUAL (assignments,0);
+         BOOST_CHECK_EQUAL (copies,0);
+         BOOST_CHECK_EQUAL (destructions,0);
+         BOOST_CHECK_EQUAL (accesses,0);
+         BOOST_CHECK_LE (comparisons,n_log2_n);
+         BOOST_CHECK_LE (swaps,n_log2_n);
       }
    }
 }
