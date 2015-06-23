@@ -59,6 +59,14 @@ BOOST_AUTO_TEST_CASE (algorithm_complexity_all)
 
          assert (v.size () == n);
 
+         counted_operations expected_counts (0,
+                                             0,
+                                             0,
+                                             0,
+                                             0,
+                                             O_n_log2_n (v.size ()),
+                                             O_n_log2_n (v.size ()));
+
          counted_operations counts;
 
          for (int i = 0; i < iterations; ++i)
@@ -95,17 +103,26 @@ BOOST_AUTO_TEST_CASE (algorithm_complexity_all)
             std::ceil (counts.swaps /
                        static_cast<long double> (iterations));
 
-         std::cout << "(v.size, iterations, (n * log_2 (n)): (" << v.size () << ", " << iterations << ", " << O_n_log2_n (v.size ()) << ")\n";
+         std::cout << "(v.size, iterations, (n * log_2 (n)): (" << v.size () << ", " << iterations << ")\n";
          std::cout << counts << "\n";
+         std::cout << "expected counts:\n";
+         std::cout << expected_counts << "\n";
 
          // This should succeed on average.
-         BOOST_CHECK_EQUAL (counts.constructions,0);
-         BOOST_CHECK_EQUAL (counts.assignments,0);
-         BOOST_CHECK_EQUAL (counts.copies,0);
-         BOOST_CHECK_EQUAL (counts.destructions,0);
-         BOOST_CHECK_EQUAL (counts.accesses,0);
-         BOOST_CHECK_LE (counts.comparisons,O_n_log2_n (v.size ()));
-         BOOST_CHECK_LE (counts.swaps,O_n_log2_n (v.size ()));
+         BOOST_CHECK_EQUAL (counts.constructions,
+                            expected_counts.constructions);
+         BOOST_CHECK_EQUAL (counts.assignments,
+                            expected_counts.assignments);
+         BOOST_CHECK_EQUAL (counts.copies,
+                            expected_counts.copies);
+         BOOST_CHECK_EQUAL (counts.destructions,
+                            expected_counts.destructions);
+         BOOST_CHECK_EQUAL (counts.accesses,
+                            expected_counts.accesses);
+         BOOST_CHECK_LE (counts.comparisons,
+                         expected_counts.comparisons);
+         BOOST_CHECK_LE (counts.swaps,
+                         expected_counts.swaps);
       }
    }
 }
