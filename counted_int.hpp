@@ -14,11 +14,10 @@ public:
       ++counts_.constructions;
    }
 
-   counted_int (const counted_int & rhs)
+   counted_int (const counted_int & rhs) :
+      v_ (rhs.v_)
    {
       ++counts_.copies;
-
-      v_ = rhs.v_;
    }
 
    counted_int &
