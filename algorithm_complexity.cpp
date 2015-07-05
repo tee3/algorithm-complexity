@@ -103,7 +103,7 @@ BOOST_AUTO_TEST_CASE (algorithm_complexity_all)
             std::ceil (counts.swaps /
                        static_cast<long double> (iterations));
 
-         std::cout << "(v.size, iterations, (n * log_2 (n)): (" << v.size () << ", " << iterations << ")\n";
+         std::cout << "(v.size, iterations): (" << v.size () << ", " << iterations << ")\n";
          std::cout << counts << "\n";
          std::cout << "expected counts:\n";
          std::cout << expected_counts << "\n";
